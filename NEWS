@@ -1,3 +1,118 @@
+Release 3.6.1
+=============
+
+Bugs fixed
+----------
+
+- Clear warnings for deprecation of `rpy2.rinterface_lib.callbacks.obj_in_module`
+  (issue #1181).
+
+- Fix callback setup during initialization on Windows (issue #1183).
+
+- In the R magic, setting options such as width, height, point size, etc. was broken
+  in the new updated system to manage graphical devices.
+
+
+Release 3.6.0
+=============
+
+New features
+------------
+
+- On systems where the default encoding is not utf-8, converting
+  R strings to Python can result in decoding errors. The default
+  encoding is now the system's encoding (rather than assume utf-8).
+  This may provide a fix to issue #1018.
+
+- Noteboook "R magic" features for ipython/jupyter support more
+  graphical devices to render R graphics in notebooks. Registered
+  devices are in :obj:`rpy2.ipython.rmags.graphics_devices`. This
+  allows the specification of fallbacks when the preferred device is
+  not available because of a missing R package. For SVG graphics,
+  it will first try to use the R package `svglite` to produce
+  lighter-weight SVG representations that are better when notebooks
+  may include many figures and figure with large number of visual
+  elements.
+
+- Experimental minimalist set of optional conversion rules to
+  convert Python :class:`list` objects to R vectors when all elements
+  are of atomic type: :obj:`rpy2.robjects.flatlist_converter`. Those
+  rules have been in used for the ipython/jupyter default converter.
+
+- The setter :attr:`rpy2.robjects.vectors.Array.dim` is now implemented,
+  allowing to change the dimension of an R array in place
+  (fixes issue #1145). 
+
+Changes
+-------
+
+- `rpy2` is now a namespace package, with `rpy2-rinterface`
+  (low-level interface close to R's C API) and `rpy2-robjects`
+  (possible more-Pythonic high-level interface using the low-level
+  interface) 2 packages on pypi installing into that namespace.
+  The package `rpy2` remains on pypi as essentially a metapackage
+  depending on `rpy2-rinterface` and `rpy2-robjects`.
+
+- :mod:`rpy2.rlike.functional` is deprecated. The functions it
+  provides proved of little use and can implemented in one line.
+  It will be removed with :mod:`rpy2` 3.7.
+
+- :class:`rpy2.rlike.collections.OrdDict` is deprecated.
+  :class:`rpy2.rlike.collections.NamedList` is enough to have
+  a Python data structure to represent R lists or paired lists.
+
+- The long-deprecated functions
+  :func:`rpy2.robjects.robjects.numpy2ri.activate`,
+  :func:`rpy2.robjects.robjects.numpy2ri.deactivate`,
+  :func:`rpy2.robjects.robjects.pandas2ri.activate`,
+  and :func:`rpy2.robjects.robjects.pandas2ri.deactivate` are no
+  longer functional. Calling them will raise an exception pointing
+  to documentation.
+
+- The wrapper for ggplot2 is now targeting the R package `ggplot2`
+  version 3.5.
+
+- The wrapper for dplyr is now targeting the R package `dplyr`
+  version 1.1.
+- The default converter for the ipython/jupyter magics depended on
+  what is the default converter at the time of module import. To
+  simplify this, the default converter is now fixed to
+  `robjects.default_converter` + `robjects.flatlist_converter` +
+  `robjects.numpy2ri.converter` + `robjects.pandas2ri.converter`.
+  If `pandas` cannot be imported
+  it falls back to `robjects.default_converter` + `robjects.numpy2ri.converter`.
+  If `numpy` cannot be imported it falls back to  `robjects.default_converter`.
+- The definition of `Rcomplex` from R's C-API was updated to match
+  the definition in recent R release (>= 4.3) when rpy2 is in "API mode".
+  This does not work with the "ABI mode" though, and the legacy
+  definition of `Rcomplex` is still used with it.
+- :func:`rpy2.rinterface.initr_simple` is no longer part of the API. Use
+  :func:`rpy2.rinterface.initr` can provide the same functionality.
+
+
+Bugs fixed
+----------
+
+- Fix case of `zoneinfo.ZoneInfo` object missing the attribute `zone`.
+  The attribute `key` is used instead. This fixes issue #1079.
+
+- The constructor for :class:`rpy2.robjects.lib.ggplot2` did not
+  play well with conversion rules in :mod:`rpy2.robjects.pandas2ri`.
+  The default conversion rules are now forced (issue #1116).
+
+- The documentation for the notebook "magic" `Rdevice` was not
+  displayed in the module-level docstring for :mod:`rpy2.ipython.rmagic`.
+
+
+Release 3.5.17
+==============
+
+New features
+------------
+
+- `geom_curve` added to the `ggplot2` mapping.
+
+
 Release 3.5.16
 ==============
 
